@@ -1,0 +1,6 @@
+{
+  "name": "VoiceBridge",
+  "description": "Always-listening background offline voice command capture and synthesis service with high-accuracy Vosk engines.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

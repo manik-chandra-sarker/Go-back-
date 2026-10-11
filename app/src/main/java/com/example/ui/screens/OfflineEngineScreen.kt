@@ -406,11 +406,26 @@ fun OfflineEngineScreen(
                             )
                             Spacer(Modifier.width(8.dp))
                             Column {
-                                Text(
-                                    text = mode.title,
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    fontWeight = FontWeight.Bold
-                                )
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Text(
+                                        text = mode.title,
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                    Spacer(Modifier.width(6.dp))
+                                    Surface(
+                                        shape = RoundedCornerShape(4.dp),
+                                        color = if (mode == OfflineEngineMode.GOOGLE_ON_DEVICE) Color(0xFF00E676) else MaterialTheme.colorScheme.secondaryContainer
+                                    ) {
+                                        Text(
+                                            text = mode.badge,
+                                            style = MaterialTheme.typography.labelSmall,
+                                            fontWeight = FontWeight.Bold,
+                                            color = if (mode == OfflineEngineMode.GOOGLE_ON_DEVICE) Color(0xFF003919) else MaterialTheme.colorScheme.onSecondaryContainer,
+                                            modifier = Modifier.padding(horizontal = 4.dp, vertical = 1.dp)
+                                        )
+                                    }
+                                }
                                 Text(
                                     text = mode.subtitle,
                                     style = MaterialTheme.typography.bodySmall,

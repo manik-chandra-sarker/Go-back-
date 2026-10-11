@@ -262,8 +262,9 @@ class VoskManager(
         try {
             val json = JSONObject(hypothesis)
             val partial = json.optString("partial", "").trim()
-            if (partial.isNotBlank() && partial != "[unk]") {
-                onPartialTranscript(partial)
+            val clean = partial.replace("[unk]", "").replace("\\s+".toRegex(), " ").trim()
+            if (clean.isNotBlank()) {
+                onPartialTranscript(clean)
                 onStatusChanged("SPEECH_DETECTED")
             }
         } catch (e: Exception) {
@@ -276,10 +277,11 @@ class VoskManager(
         try {
             val json = JSONObject(hypothesis)
             val text = json.optString("text", "").trim()
-            if (text.isNotBlank() && text != "[unk]") {
+            val clean = text.replace("[unk]", "").replace("\\s+".toRegex(), " ").trim()
+            if (clean.isNotBlank()) {
                 val confidence = extractConfidence(json)
-                Log.d(TAG, "Vosk onResult: \"$text\" (conf=$confidence)")
-                onTextRecognized(text, confidence)
+                Log.d(TAG, "Vosk onResult: \"$clean\" (conf=$confidence)")
+                onTextRecognized(clean, confidence)
                 onStatusChanged("LISTENING")
             }
         } catch (e: Exception) {
@@ -292,10 +294,11 @@ class VoskManager(
         try {
             val json = JSONObject(hypothesis)
             val text = json.optString("text", "").trim()
-            if (text.isNotBlank() && text != "[unk]") {
+            val clean = text.replace("[unk]", "").replace("\\s+".toRegex(), " ").trim()
+            if (clean.isNotBlank()) {
                 val confidence = extractConfidence(json)
-                Log.d(TAG, "Vosk onFinalResult: \"$text\" (conf=$confidence)")
-                onTextRecognized(text, confidence)
+                Log.d(TAG, "Vosk onFinalResult: \"$clean\" (conf=$confidence)")
+                onTextRecognized(clean, confidence)
                 onStatusChanged("LISTENING")
             }
         } catch (e: Exception) {

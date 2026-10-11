@@ -37,9 +37,9 @@ class ExampleRobolectricTest {
         val settings = prefs.getSettings()
 
         assertTrue(settings.preferOffline)
-        assertEquals(OfflineEngineMode.VOSK_OFFLINE, settings.engineMode)
+        assertEquals(OfflineEngineMode.GOOGLE_ON_DEVICE, settings.engineMode)
         assertEquals(VoskModelVariant.VOSK_HIGH_ACCURACY_LGRAPH, settings.selectedVoskModel)
-        assertTrue(settings.useGrammarConstraint)
+        org.junit.Assert.assertFalse(settings.useGrammarConstraint)
         assertEquals(1500L, settings.commandDelayMs)
         assertTrue(settings.stitchMultiSegmentSpeech)
         assertEquals(TargetApp.TASKER, settings.defaultTarget)

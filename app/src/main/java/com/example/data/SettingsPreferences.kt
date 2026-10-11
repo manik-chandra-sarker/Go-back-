@@ -25,11 +25,11 @@ class SettingsPreferences(context: Context) {
             TargetApp.TASKER
         }
 
-        val engineModeName = prefs.getString(KEY_ENGINE_MODE, OfflineEngineMode.VOSK_OFFLINE.name) ?: OfflineEngineMode.VOSK_OFFLINE.name
+        val engineModeName = prefs.getString(KEY_ENGINE_MODE, OfflineEngineMode.GOOGLE_ON_DEVICE.name) ?: OfflineEngineMode.GOOGLE_ON_DEVICE.name
         val engineMode = try {
             OfflineEngineMode.valueOf(engineModeName)
         } catch (e: Exception) {
-            OfflineEngineMode.VOSK_OFFLINE
+            OfflineEngineMode.GOOGLE_ON_DEVICE
         }
 
         val modelVariantName = prefs.getString(KEY_VOSK_MODEL_VARIANT, VoskModelVariant.VOSK_HIGH_ACCURACY_LGRAPH.name)
@@ -44,7 +44,7 @@ class SettingsPreferences(context: Context) {
             preferOffline = prefs.getBoolean(KEY_PREFER_OFFLINE, true),
             engineMode = engineMode,
             selectedVoskModel = modelVariant,
-            useGrammarConstraint = prefs.getBoolean(KEY_USE_GRAMMAR_CONSTRAINT, true),
+            useGrammarConstraint = prefs.getBoolean(KEY_USE_GRAMMAR_CONSTRAINT, false),
             noiseSuppressionEnabled = prefs.getBoolean(KEY_NOISE_SUPPRESSION, true),
             vadSensitivity = prefs.getFloat(KEY_VAD_SENSITIVITY, 0.5f),
             silenceTimeoutMs = prefs.getLong(KEY_SILENCE_TIMEOUT_MS, 800L),

@@ -51,30 +51,34 @@ enum class VoskModelVariant(
     )
 }
 
-enum class OfflineEngineMode(val title: String, val subtitle: String) {
+enum class OfflineEngineMode(val title: String, val subtitle: String, val badge: String) {
+    GOOGLE_ON_DEVICE(
+        title = "Android Native On-Device Engine (Google Conformer STT)",
+        subtitle = "Highest accuracy offline engine on Android. Powered by Google on-device neural language models with zero cloud delay.",
+        badge = "HIGHEST ACCURACY"
+    ),
     VOSK_OFFLINE(
-        title = "Vosk Offline STT (True Speech-to-Text)",
-        subtitle = "Transforms spoken words into text 100% offline using embedded Vosk engine"
+        title = "Vosk Offline STT (Kaldi Engine - Open Vocabulary)",
+        subtitle = "100% in-app offline speech-to-text. Full English dictionary without restricting words.",
+        badge = "100% IN-APP"
     ),
     STANDALONE_AUDIO(
         title = "Direct Acoustic VAD Engine (Dicio-style)",
-        subtitle = "100% on-device AudioRecord VAD & acoustic phrase matcher"
+        subtitle = "100% on-device AudioRecord VAD & acoustic phrase matcher",
+        badge = "ACOUSTIC VAD"
     ),
     HYBRID_AUTO(
-        title = "Hybrid Auto (Vosk + Fallbacks)",
-        subtitle = "Uses Vosk offline STT, automatically falls back to Direct Audio Engine if needed"
-    ),
-    GOOGLE_STT(
-        title = "Google SpeechRecognizer (Offline Mode)",
-        subtitle = "Relies on downloaded Google voice acoustic language packs"
+        title = "Hybrid Auto (On-Device + Vosk Fallback)",
+        subtitle = "Tries Android on-device neural engine, automatically falls back to Vosk if needed",
+        badge = "AUTO"
     )
 }
 
 data class AppSettings(
     val preferOffline: Boolean = true,
-    val engineMode: OfflineEngineMode = OfflineEngineMode.VOSK_OFFLINE,
+    val engineMode: OfflineEngineMode = OfflineEngineMode.GOOGLE_ON_DEVICE,
     val selectedVoskModel: VoskModelVariant = VoskModelVariant.VOSK_HIGH_ACCURACY_LGRAPH,
-    val useGrammarConstraint: Boolean = true,
+    val useGrammarConstraint: Boolean = false,
     val noiseSuppressionEnabled: Boolean = true,
     val vadSensitivity: Float = 0.5f,
     val silenceTimeoutMs: Long = 800L,

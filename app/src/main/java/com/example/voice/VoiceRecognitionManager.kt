@@ -187,6 +187,17 @@ class VoiceRecognitionManager(
     }
 
     private fun createRecognizerInstance(): SpeechRecognizer? {
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+            try {
+                if (SpeechRecognizer.isOnDeviceRecognitionAvailable(context)) {
+                    Log.d(TAG, "Using Android 12+ On-Device Neural Speech Recognizer (Conformer)")
+                    return SpeechRecognizer.createOnDeviceSpeechRecognizer(context)
+                }
+            } catch (e: Exception) {
+                Log.w(TAG, "createOnDeviceSpeechRecognizer check threw: ${e.message}")
+            }
+        }
+
         if (!hasAnyRecognitionService()) {
             return null
         }

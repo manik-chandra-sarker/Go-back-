@@ -453,7 +453,7 @@ class VoiceCaptureService : Service(), AudioManager.OnAudioFocusChangeListener {
                     }
                 }
             }
-            OfflineEngineMode.GOOGLE_STT -> {
+            OfflineEngineMode.GOOGLE_ON_DEVICE -> {
                 isUsingDirectAudioEngine = false
                 voskManager.stopListening()
                 offlineAudioEngine.stop()
@@ -462,8 +462,8 @@ class VoiceCaptureService : Service(), AudioManager.OnAudioFocusChangeListener {
                     it.copy(
                         isRunning = true,
                         status = ListeningStatus.LISTENING,
-                        activeEngine = "Google Offline STT",
-                        activeModelName = "Google Speech",
+                        activeEngine = "Google On-Device Neural STT",
+                        activeModelName = "Google Conformer (Offline)",
                         grammarModeActive = false,
                         errorMessage = null
                     )

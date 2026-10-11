@@ -241,6 +241,7 @@ fun DashboardScreen(
                 isSmallInstalled = isSmallInstalled,
                 onDownloadModel = onDownloadModel,
                 onSelectModel = onSelectModel,
+                onSelectEngine = { onUpdateSettings(settings.copy(engineMode = it)) },
                 onToggleGrammar = onToggleGrammar
             )
         }

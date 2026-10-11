@@ -16,15 +16,18 @@ import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.GraphicEq
-import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Psychology
 import androidx.compose.material.icons.filled.Speed
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
@@ -37,6 +40,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.data.model.AppSettings
+import com.example.data.model.OfflineEngineMode
 import com.example.data.model.VoskModelVariant
 import com.example.voice.VoskManager
 
@@ -48,6 +52,7 @@ fun VoskAccuracyCard(
     isSmallInstalled: Boolean,
     onDownloadModel: (VoskModelVariant) -> Unit,
     onSelectModel: (VoskModelVariant) -> Unit,
+    onSelectEngine: (OfflineEngineMode) -> Unit,
     onToggleGrammar: (Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -76,89 +81,50 @@ fun VoskAccuracyCard(
                     )
                     Spacer(Modifier.width(8.dp))
                     Text(
-                        text = "Vosk English Accuracy Booster",
+                        text = "Offline Engine & Accuracy",
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold
                     )
                 }
                 Surface(
                     shape = RoundedCornerShape(8.dp),
-                    color = if (settings.useGrammarConstraint) Color(0xFF00E676).copy(alpha = 0.2f) else MaterialTheme.colorScheme.tertiaryContainer
+                    color = when (settings.engineMode) {
+                        OfflineEngineMode.GOOGLE_ON_DEVICE -> Color(0xFF00E676).copy(alpha = 0.2f)
+                        else -> MaterialTheme.colorScheme.primaryContainer
+                    }
                 ) {
                     Text(
-                        text = if (settings.useGrammarConstraint) "HIGH ACCURACY ACTIVE" else "OPEN DICTATION",
+                        text = when (settings.engineMode) {
+                            OfflineEngineMode.GOOGLE_ON_DEVICE -> "GOOGLE CONFORMER (BEST)"
+                            OfflineEngineMode.VOSK_OFFLINE -> "VOSK OPEN DICTATION"
+                            else -> settings.engineMode.name
+                        },
                         style = MaterialTheme.typography.labelSmall,
                         fontWeight = FontWeight.Bold,
-                        color = if (settings.useGrammarConstraint) Color(0xFF00E676) else MaterialTheme.colorScheme.onTertiaryContainer,
+                        color = when (settings.engineMode) {
+                            OfflineEngineMode.GOOGLE_ON_DEVICE -> Color(0xFF00E676)
+                            else -> MaterialTheme.colorScheme.onPrimaryContainer
+                        },
                         modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
                     )
                 }
             }
 
             Text(
-                text = "Why default Vosk accuracy is low: The default 'small' model searches freely across 100,000+ words, leading to misheard commands. Two upgrades fix this completely:",
+                text = "Is there anything better than Vosk offline? YES! Android's native On-Device Engine (Google Conformer) provides vastly higher accuracy than Vosk without requiring cloud access.",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
 
-            // Solution 1: Dynamic Grammar Constraint Switch
+            // Recommended Option: Android Native On-Device Engine (Conformer)
             Card(
                 colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surface
-                ),
-                shape = RoundedCornerShape(12.dp),
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Row(
-                    modifier = Modifier.padding(14.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Column(modifier = Modifier.weight(1f)) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(Icons.Default.Speed, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(18.dp))
-                            Spacer(Modifier.width(6.dp))
-                            Text(
-                                text = "Dynamic Command Grammar (>95% Acc)",
-                                style = MaterialTheme.typography.titleSmall,
-                                fontWeight = FontWeight.Bold
-                            )
-                        }
-                        Text(
-                            text = "Constrains the Kaldi WFST decoder directly to your automation rules & action vocabulary. Eliminates false positives and misheard commands.",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.padding(top = 4.dp)
-                        )
-                    }
-                    Switch(
-                        checked = settings.useGrammarConstraint,
-                        onCheckedChange = onToggleGrammar,
-                        colors = SwitchDefaults.colors(
-                            checkedThumbColor = MaterialTheme.colorScheme.onPrimary,
-                            checkedTrackColor = MaterialTheme.colorScheme.primary
-                        ),
-                        modifier = Modifier.testTag("toggle_grammar_switch")
-                    )
-                }
-            }
-
-            // Solution 2: English Models comparison
-            Text(
-                text = "English Model Engines:",
-                style = MaterialTheme.typography.labelMedium,
-                fontWeight = FontWeight.Bold
-            )
-
-            // High-Accuracy LGraph Model Card
-            Card(
-                colors = CardDefaults.cardColors(
-                    containerColor = if (settings.selectedVoskModel == VoskModelVariant.VOSK_HIGH_ACCURACY_LGRAPH)
+                    containerColor = if (settings.engineMode == OfflineEngineMode.GOOGLE_ON_DEVICE)
                         MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f)
                     else
                         MaterialTheme.colorScheme.surface
                 ),
-                shape = RoundedCornerShape(12.dp),
+                shape = RoundedCornerShape(14.dp),
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Column(modifier = Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -167,149 +133,149 @@ fun VoskAccuracyCard(
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Column {
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                Text(
-                                    text = "Vosk High-Accuracy LGraph (128 MB)",
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    fontWeight = FontWeight.Bold
-                                )
-                                Spacer(Modifier.width(6.dp))
-                                Surface(
-                                    shape = RoundedCornerShape(4.dp),
-                                    color = MaterialTheme.colorScheme.primary
-                                ) {
-                                    Text(
-                                        text = "RECOMMENDED",
-                                        style = MaterialTheme.typography.labelSmall,
-                                        color = MaterialTheme.colorScheme.onPrimary,
-                                        modifier = Modifier.padding(horizontal = 4.dp, vertical = 2.dp)
-                                    )
-                                }
-                            }
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(Icons.Default.Psychology, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(22.dp))
+                            Spacer(Modifier.width(8.dp))
                             Text(
-                                text = "Full dynamic Kaldi Lookahead Graph. Substantially lower Word Error Rate (WER) across diverse accents and noisy rooms.",
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                                text = "Google On-Device Neural Engine",
+                                style = MaterialTheme.typography.titleSmall,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                        Surface(
+                            shape = RoundedCornerShape(4.dp),
+                            color = Color(0xFF00E676)
+                        ) {
+                            Text(
+                                text = "HIGHEST ACCURACY",
+                                style = MaterialTheme.typography.labelSmall,
+                                fontWeight = FontWeight.Bold,
+                                color = Color(0xFF003919),
+                                modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
                             )
                         }
                     }
 
-                    if (isLGraphInstalled) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                Icon(Icons.Default.CheckCircle, contentDescription = null, tint = Color(0xFF00E676), modifier = Modifier.size(16.dp))
-                                Spacer(Modifier.width(4.dp))
-                                Text("Installed on device", style = MaterialTheme.typography.labelSmall, color = Color(0xFF00E676))
-                            }
-                            if (settings.selectedVoskModel != VoskModelVariant.VOSK_HIGH_ACCURACY_LGRAPH) {
-                                Button(
-                                    onClick = { onSelectModel(VoskModelVariant.VOSK_HIGH_ACCURACY_LGRAPH) },
-                                    modifier = Modifier.testTag("activate_lgraph_model_button")
-                                ) {
-                                    Text("Activate Model")
-                                }
-                            } else {
-                                Text("Active Engine", style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
-                            }
-                        }
-                    } else {
-                        Button(
-                            onClick = { onDownloadModel(VoskModelVariant.VOSK_HIGH_ACCURACY_LGRAPH) },
-                            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
-                            modifier = Modifier.fillMaxWidth().testTag("download_lgraph_button")
-                        ) {
-                            Icon(Icons.Default.Download, contentDescription = null, modifier = Modifier.size(18.dp))
-                            Spacer(Modifier.width(8.dp))
-                            Text("Download High-Accuracy English Model (~128MB)")
-                        }
-                    }
-                }
-            }
-
-            // Compact Small Model Card
-            Card(
-                colors = CardDefaults.cardColors(
-                    containerColor = if (settings.selectedVoskModel == VoskModelVariant.VOSK_SMALL_EN)
-                        MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f)
-                    else
-                        MaterialTheme.colorScheme.surface
-                ),
-                shape = RoundedCornerShape(12.dp),
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Column(modifier = Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     Text(
-                        text = "Vosk Small English (40 MB)",
-                        style = MaterialTheme.typography.bodyMedium,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Text(
-                        text = "Compact lightweight model for devices with constrained storage.",
+                        text = "Uses Google's deep neural Conformer speech models built into Android 12+. 100% offline, natural conversational English, virtually zero misheard words.",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
 
-                    if (isSmallInstalled) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.End
+                    ) {
+                        if (settings.engineMode != OfflineEngineMode.GOOGLE_ON_DEVICE) {
+                            Button(
+                                onClick = { onSelectEngine(OfflineEngineMode.GOOGLE_ON_DEVICE) },
+                                modifier = Modifier.testTag("switch_to_google_on_device_btn")
+                            ) {
+                                Text("Use Google On-Device STT")
+                            }
+                        } else {
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Icon(Icons.Default.CheckCircle, contentDescription = null, tint = Color(0xFF00E676), modifier = Modifier.size(16.dp))
                                 Spacer(Modifier.width(4.dp))
-                                Text("Installed on device", style = MaterialTheme.typography.labelSmall, color = Color(0xFF00E676))
+                                Text("Active Engine (Highest Accuracy)", style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold, color = Color(0xFF00E676))
                             }
-                            if (settings.selectedVoskModel != VoskModelVariant.VOSK_SMALL_EN) {
-                                Button(
-                                    onClick = { onSelectModel(VoskModelVariant.VOSK_SMALL_EN) },
-                                    modifier = Modifier.testTag("activate_small_model_button")
-                                ) {
-                                    Text("Activate Model")
-                                }
-                            } else {
-                                Text("Active Engine", style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
-                            }
-                        }
-                    } else {
-                        Button(
-                            onClick = { onDownloadModel(VoskModelVariant.VOSK_SMALL_EN) },
-                            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary),
-                            modifier = Modifier.fillMaxWidth().testTag("download_small_button")
-                        ) {
-                            Icon(Icons.Default.Download, contentDescription = null, modifier = Modifier.size(18.dp))
-                            Spacer(Modifier.width(8.dp))
-                            Text("Download Small English Model (~40MB)")
                         }
                     }
                 }
             }
 
-            // Live download progress if downloading
-            if (voskState is VoskManager.ModelState.Downloading) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(8.dp))
-                        .padding(12.dp),
-                    verticalArrangement = Arrangement.spacedBy(6.dp)
-                ) {
+            // Vosk In-App Engine Card
+            Card(
+                colors = CardDefaults.cardColors(
+                    containerColor = if (settings.engineMode == OfflineEngineMode.VOSK_OFFLINE)
+                        MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f)
+                    else
+                        MaterialTheme.colorScheme.surface
+                ),
+                shape = RoundedCornerShape(14.dp),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Column(modifier = Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text("Downloading English Vosk Model...", style = MaterialTheme.typography.bodySmall, fontWeight = FontWeight.Bold)
-                        Text("${voskState.progressPercent}% (${(voskState.bytesReadMb * 10).toInt() / 10f} / ${(voskState.totalMb * 10).toInt() / 10f} MB)", style = MaterialTheme.typography.bodySmall)
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(Icons.Default.GraphicEq, contentDescription = null, tint = MaterialTheme.colorScheme.secondary, modifier = Modifier.size(20.dp))
+                            Spacer(Modifier.width(8.dp))
+                            Text(
+                                text = "Vosk Offline STT (Kaldi Engine)",
+                                style = MaterialTheme.typography.titleSmall,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                        Surface(
+                            shape = RoundedCornerShape(4.dp),
+                            color = MaterialTheme.colorScheme.secondaryContainer
+                        ) {
+                            Text(
+                                text = "100% IN-APP",
+                                style = MaterialTheme.typography.labelSmall,
+                                color = MaterialTheme.colorScheme.onSecondaryContainer,
+                                modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                            )
+                        }
                     }
-                    LinearProgressIndicator(
-                        progress = { voskState.progressPercent / 100f },
-                        modifier = Modifier.fillMaxWidth()
+
+                    Text(
+                        text = "Embedded Kaldi speech engine. Now updated with Unrestricted Vocabulary and cleaned [unk] tokens so words are not cut off.",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Column {
+                            Text(
+                                text = "Active Model: ${settings.selectedVoskModel.displayName}",
+                                style = MaterialTheme.typography.labelSmall,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                        }
+
+                        if (settings.engineMode != OfflineEngineMode.VOSK_OFFLINE) {
+                            OutlinedButton(
+                                onClick = { onSelectEngine(OfflineEngineMode.VOSK_OFFLINE) },
+                                modifier = Modifier.testTag("switch_to_vosk_btn")
+                            ) {
+                                Text("Use Vosk Engine")
+                            }
+                        } else {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Icon(Icons.Default.CheckCircle, contentDescription = null, tint = Color(0xFF00E676), modifier = Modifier.size(16.dp))
+                                Spacer(Modifier.width(4.dp))
+                                Text("Active Engine", style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
+                            }
+                        }
+                    }
+
+                    // Strict Grammar toggle for Vosk
+                    if (settings.engineMode == OfflineEngineMode.VOSK_OFFLINE) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text("Restrict to Trigger Keywords", style = MaterialTheme.typography.bodySmall, fontWeight = FontWeight.Bold)
+                                Text("Off = Open dictionary (default). On = Strict trigger words only", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                            }
+                            Switch(
+                                checked = settings.useGrammarConstraint,
+                                onCheckedChange = onToggleGrammar,
+                                modifier = Modifier.testTag("vosk_grammar_switch")
+                            )
+                        }
+                    }
                 }
             }
         }
